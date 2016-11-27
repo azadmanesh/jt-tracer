@@ -406,7 +406,6 @@ public class ArgumentProcessor {
                         config.setCompileMode(RubyInstanceConfig.CompileMode.TRUFFLE);
                         // Make the static option consistent with the compile mode.
                         Options.COMPILE_MODE.force("TRUFFLE");
-                        config.setDisableGems(true);
                     } else if (extendedOption.endsWith("...")) {
                         Options.listPrefix(extendedOption.substring(0, extendedOption.length() - "...".length()));
                         config.setShouldRunInterpreter(false);
@@ -814,6 +813,12 @@ public class ArgumentProcessor {
                     if (entry.getKey().equals("all")) continue; // skip self
                     entry.getValue().apply(processor, enable);
                 }
+                return true;
+            }
+        });
+        features.put("gem", new Function2<Boolean, ArgumentProcessor, Boolean>() {
+            public Boolean apply(ArgumentProcessor processor, Boolean enable) {
+                processor.config.setDisableGems(!enable);
                 return true;
             }
         });
