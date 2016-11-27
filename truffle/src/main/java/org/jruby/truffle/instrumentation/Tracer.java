@@ -1,6 +1,7 @@
 package org.jruby.truffle.instrumentation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -37,14 +38,22 @@ public class Tracer extends TruffleInstrument {
     @Override
     protected void onCreate(Env env) {
         System.out.println(">> Launched Instrumentation!");
-        env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(USE_STACK_DEF_STACK_TAG).build(), new UseStackDefStackEventListener());
-        env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(NO_USE_DEF_STACK).build(), new NoUseDefStackEventListener());
-        env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(FUNCTION_BOUNDARY_TAG).build(), new FunctionBoundaryEventListener());
-        env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(USE_LOCAL_DEF_STACK_TAG).build(), new UseLocalDefStackEventListener());
-        env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(USE_STACK_DEF_LOCAL_STACK_TAG).build(), new UseStackDefLocalStackEventListener());
-        env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(USE_ARG_DEF_STACK_TAG).build(), new UseArgDefStackEventListener());
-        env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(USE_STACK_DEF_PROPERTY_STACK_TAG).build(), new UseStackDefPropertyStackEventListener());
-        env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(USE_PROPERTY_STACK_DEF_STACK_TAG).build(), new UsePropertyStackDefStackEventListener());
+        env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(FUNCTION_BOUNDARY_TAG).build(),
+                        new FunctionBoundaryEventListener());
+// env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(NO_USE_DEF_STACK).build(),
+// new NoUseDefStackEventListener());
+// env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(USE_STACK_DEF_LOCAL_STACK_TAG).build(),
+// new UseStackDefLocalStackEventListener());
+// env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(USE_STACK_DEF_STACK_TAG).build(),
+// new UseStackDefStackEventListener());
+// env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(USE_LOCAL_DEF_STACK_TAG).build(),
+// new UseLocalDefStackEventListener());
+// env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(USE_ARG_DEF_STACK_TAG).build(),
+// new UseArgDefStackEventListener());
+// env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(USE_STACK_DEF_PROPERTY_STACK_TAG).build(),
+// new UseStackDefPropertyStackEventListener());
+// env.getInstrumenter().attachListener(SourceSectionFilter.newBuilder().tagIs(USE_PROPERTY_STACK_DEF_STACK_TAG).build(),
+// new UsePropertyStackDefStackEventListener());
     }
 
     static final class UseStackDefStackEventListener implements ExecutionEventListener {
@@ -83,7 +92,17 @@ public class Tracer extends TruffleInstrument {
     static final class FunctionBoundaryEventListener implements ExecutionEventListener {
 
         public void onEnter(EventContext context, VirtualFrame frame) {
-            System.out.println(">> Function Boundary Before: " + context);
+            // Initialize the shadow tree stack. It simulates the behavior of an operand stack
+            System.out.println("Entered frame is " + frame);
+            System.out.println("Root node is " + context.getInstrumentedNode().getRootNode());
+            System.out.println("Code is " + context.getInstrumentedNode().getRootNode().getSourceSection().getCode());
+            final FrameSlot stackSlot = frame.getFrameDescriptor().addFrameSlot(SHADOW_OPERAND_STACK_KEY);
+            Stack<ShadowTree> stack = new Stack<ShadowTree>();
+            frame.setObject(stackSlot, stack);
+
+            // Initialize the mapping of locals to their list of occurrences.
+            final FrameSlot localSlot = frame.getFrameDescriptor().addFrameSlot(SHADOW_LOCAL_KEY);
+            frame.setObject(localSlot, new HashMap<String, List<ShadowTree>>());
         }
 
         public void onReturnValue(EventContext context, VirtualFrame frame, Object result) {
@@ -117,6 +136,7 @@ public class Tracer extends TruffleInstrument {
 
         public void onReturnValue(EventContext context, VirtualFrame frame, Object result) {
             try {
+                System.out.println("Frame in write local is " + frame);
                 ShadowTree newShadowTree = null;
                 // Read the shadow tree of the current value from top of operand stack
                 FrameSlot stackSlot = frame.getFrameDescriptor().findFrameSlot(SHADOW_OPERAND_STACK_KEY);
@@ -144,6 +164,10 @@ public class Tracer extends TruffleInstrument {
 
                 // def stack
                 Tracer.this.pushOnOperandStack(newShadowTree, frame);
+
+                // TODO remove this code
+                System.out.println("Local written with the following origins:");
+                ShadowTree.dumpTree(newShadowTree);
 
             } catch (FrameSlotTypeException e) {
                 throw new IllegalStateException(e);
@@ -227,6 +251,7 @@ public class Tracer extends TruffleInstrument {
     private void pushOnOperandStack(ShadowTree tree, VirtualFrame frame) {
         try {
             FrameSlot stackSlot = frame.getFrameDescriptor().findOrAddFrameSlot(SHADOW_OPERAND_STACK_KEY);
+            System.out.println(frame.getClass().getName());
             Stack<ShadowTree> stack = (Stack<ShadowTree>) frame.getObject(stackSlot);
             stack.push(tree);
         } catch (FrameSlotTypeException e) {

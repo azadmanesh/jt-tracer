@@ -18,6 +18,7 @@ import com.oracle.truffle.api.profiles.BranchProfile;
 import com.oracle.truffle.api.source.SourceSection;
 import org.jruby.truffle.Layouts;
 import org.jruby.truffle.RubyContext;
+import org.jruby.truffle.instrumentation.Tracer;
 import org.jruby.truffle.language.RubyGuards;
 import org.jruby.truffle.language.RubyNode;
 import org.jruby.truffle.language.control.RaiseException;
@@ -202,6 +203,14 @@ public class ExceptionTranslatingNode extends RubyNode {
         }
 
         return coreExceptions().internalError(reportedMessage, this, throwable);
+    }
+
+    @Override
+    protected boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.FUNCTION_BOUNDARY_TAG)
+            return true;
+        else
+            return false;
     }
 
 }

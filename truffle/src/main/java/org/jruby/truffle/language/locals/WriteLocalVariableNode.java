@@ -14,10 +14,12 @@ import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.source.SourceSection;
 import org.jruby.truffle.RubyContext;
+import org.jruby.truffle.instrumentation.Tracer;
+import org.jruby.truffle.instrumentation.Tracer.UseStackDefLocalStack;
 import org.jruby.truffle.language.RubyNode;
 import org.jruby.truffle.language.RubySourceSection;
 
-public class WriteLocalVariableNode extends RubyNode {
+public class WriteLocalVariableNode extends RubyNode implements UseStackDefLocalStack {
 
     private final FrameSlot frameSlot;
 
@@ -70,6 +72,18 @@ public class WriteLocalVariableNode extends RubyNode {
     @Override
     public Object isDefined(VirtualFrame frame) {
         return coreStrings().ASSIGNMENT.createInstance();
+    }
+
+    @Override
+    protected boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.USE_STACK_DEF_LOCAL_STACK_TAG)
+            return true;
+        else
+            return false;
+    }
+
+    public FrameSlot getLocalSlot() {
+        return this.frameSlot;
     }
 
 }

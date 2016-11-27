@@ -45,6 +45,7 @@ project 'JRuby Truffle' do
                                                'com.oracle.truffle.dsl.processor.InstrumentableProcessor',
                                                'com.oracle.truffle.dsl.processor.TruffleProcessor',
                                                'com.oracle.truffle.dsl.processor.interop.InteropDSLProcessor',
+					                                     'com.oracle.truffle.dsl.processor.InstrumentRegistrationProcessor',
                                                'com.oracle.truffle.dsl.processor.verify.VerifyTruffleProcessor',
                                                'com.oracle.truffle.dsl.processor.LanguageRegistrationProcessor', ],
                    'generatedSourcesDirectory' =>  'target/generated-sources',

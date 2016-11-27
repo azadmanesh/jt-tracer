@@ -21,6 +21,7 @@ import org.jruby.RubyInstanceConfig;
 import org.jruby.runtime.Constants;
 import org.jruby.truffle.core.kernel.TraceManager;
 import org.jruby.truffle.extra.AttachmentsManager;
+import org.jruby.truffle.instrumentation.Tracer;
 import org.jruby.truffle.interop.InstanceConfigWrapper;
 import org.jruby.truffle.language.LazyRubyRootNode;
 import org.jruby.truffle.language.RubyGuards;
@@ -40,7 +41,10 @@ import java.io.IOException;
         TraceManager.LineTag.class,
         StandardTags.RootTag.class,
         StandardTags.StatementTag.class,
-        StandardTags.CallTag.class
+                StandardTags.CallTag.class,
+                Tracer.FunctionBoundary.class,
+                Tracer.NoUseDefStack.class,
+                Tracer.UseStackDefLocalStack.class
 })
 public class RubyLanguage extends TruffleLanguage<RubyContext> {
 

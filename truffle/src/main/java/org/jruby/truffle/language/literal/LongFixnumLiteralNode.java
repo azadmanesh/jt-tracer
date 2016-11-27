@@ -14,6 +14,7 @@ import com.oracle.truffle.api.nodes.NodeCost;
 import com.oracle.truffle.api.nodes.NodeInfo;
 import com.oracle.truffle.api.source.SourceSection;
 import org.jruby.truffle.RubyContext;
+import org.jruby.truffle.instrumentation.Tracer;
 import org.jruby.truffle.language.RubyNode;
 
 @NodeInfo(cost = NodeCost.NONE)
@@ -34,6 +35,14 @@ public class LongFixnumLiteralNode extends RubyNode {
     @Override
     public long executeLong(VirtualFrame frame) {
         return value;
+    }
+
+    @Override
+    protected boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.NO_USE_DEF_STACK)
+            return true;
+        else
+            return false;
     }
 
 }

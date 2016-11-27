@@ -30,6 +30,7 @@ public class JRubyTruffleImpl implements JRubyTruffleInterface {
 
     @Override
     public int execute(String path) {
+        System.out.println("Hello from JRuby Truffle!");
         return engine.execute(path);
     }
 

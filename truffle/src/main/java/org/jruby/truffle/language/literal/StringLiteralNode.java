@@ -24,6 +24,7 @@ import com.oracle.truffle.api.source.SourceSection;
 import org.jruby.truffle.Layouts;
 import org.jruby.truffle.RubyContext;
 import org.jruby.truffle.core.rope.Rope;
+import org.jruby.truffle.instrumentation.Tracer;
 import org.jruby.truffle.language.RubyNode;
 
 public class StringLiteralNode extends RubyNode {
@@ -38,6 +39,14 @@ public class StringLiteralNode extends RubyNode {
     @Override
     public DynamicObject execute(VirtualFrame frame) {
         return Layouts.STRING.createString(coreLibrary().getStringFactory(), rope);
+    }
+
+    @Override
+    protected boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.NO_USE_DEF_STACK)
+            return true;
+        else
+            return false;
     }
 
 }

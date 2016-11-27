@@ -13,6 +13,7 @@ import com.oracle.truffle.api.ExecutionContext;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.nodes.NodeUtil;
 import com.oracle.truffle.api.nodes.RootNode;
 import com.oracle.truffle.api.source.SourceSection;
 import org.jruby.truffle.RubyContext;
@@ -47,6 +48,11 @@ public class RubyRootNode extends RootNode {
 
     @Override
     public Object execute(VirtualFrame frame) {
+// System.out.println("Printing AST from root for " + this.getName() + " : " + this.getDescription()
+// + " <> " + this.toString() + " || " + this.getSourceSection().getCode());
+// NodeUtil.printCompactTree(System.out, this);
+        if (this.getSourceSection().getSource().getName().equals("mytest.rb"))
+            NodeUtil.printCompactTree(System.out, this);
         context.getSafepointManager().poll(this);
         return body.execute(frame);
     }

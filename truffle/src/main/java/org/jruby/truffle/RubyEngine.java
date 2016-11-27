@@ -12,8 +12,11 @@ package org.jruby.truffle;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.vm.PolyglotEngine;
+
+
 import org.jruby.JRubyTruffleInterface;
 import org.jruby.RubyInstanceConfig;
+import org.jruby.truffle.instrumentation.Tracer;
 import org.jruby.truffle.interop.InstanceConfigWrapper;
 import org.jruby.truffle.platform.graal.Graal;
 import org.jruby.util.cli.Options;
@@ -42,6 +45,10 @@ public class RubyEngine {
         }
 
         context.setOriginalInputFile(path);
+
+        // Tracer instrumentation
+        System.out.println("Before enabling instrumentation.");
+        engine.getInstruments().get("tracer").setEnabled(true);
 
         return engine.eval(loadSource("Truffle::Boot.main", "main")).as(Integer.class);
     }

@@ -58,6 +58,7 @@ import java.lang.management.ManagementFactory;
 public class Main {
 
     public static void main(String[] args) {
+        System.err.println("Hello from Ruby Truffle;");
         printTruffleTimeMetric("before-main");
 
         final RubyInstanceConfig config = new RubyInstanceConfig(false);
