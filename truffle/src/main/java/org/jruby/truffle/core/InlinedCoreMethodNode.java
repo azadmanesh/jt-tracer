@@ -19,6 +19,7 @@ import com.oracle.truffle.api.nodes.NodeUtil;
 import org.jruby.truffle.RubyContext;
 import org.jruby.truffle.builtins.CoreMethodNodeManager;
 import org.jruby.truffle.core.array.ArrayUtils;
+import org.jruby.truffle.instrumentation.Tracer;
 import org.jruby.truffle.language.RubyNode;
 import org.jruby.truffle.language.dispatch.RubyCallNode;
 import org.jruby.truffle.language.dispatch.RubyCallNodeParameters;
@@ -114,6 +115,14 @@ public class InlinedCoreMethodNode extends RubyNode {
     @Override
     public Object isDefined(VirtualFrame frame) {
         return rewriteToCallNode().isDefined(frame);
+    }
+
+    @Override
+    public boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.USE_STACK_DEF_STACK_TAG)
+            return true;
+        else
+            return false;
     }
 
 }

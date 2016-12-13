@@ -10,13 +10,27 @@
 package org.jruby.truffle.language.arguments;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
+
+import org.jruby.truffle.instrumentation.Tracer;
+import org.jruby.truffle.instrumentation.Tracer.UseArgDefStack;
 import org.jruby.truffle.language.RubyNode;
 
-public class ReadSelfNode extends RubyNode {
+public class ReadSelfNode extends RubyNode implements UseArgDefStack {
 
     @Override
     public Object execute(VirtualFrame frame) {
         return RubyArguments.getSelf(frame);
     }
 
+    @Override
+    public boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.USE_ARG_DEF_STACK_TAG)
+            return true;
+        else
+            return super.isTaggedWith(tag);
+    }
+
+    public int getIndex() {
+        return 0;
+    }
 }

@@ -49,6 +49,9 @@ public class RubyEngine {
 
         context.setOriginalInputFile(path);
 
+        System.out.println("Hello from JRuby Truffle");
+        engine.getInstruments().get("tracer").setEnabled(true);
+
         return engine.eval(loadSource("Truffle::Boot.main", "main")).as(Integer.class);
     }
 

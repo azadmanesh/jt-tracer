@@ -14,9 +14,11 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.source.SourceSection;
 import org.jruby.truffle.RubyContext;
+import org.jruby.truffle.instrumentation.Tracer;
+import org.jruby.truffle.instrumentation.Tracer.UseGlobalDefStack;
 import org.jruby.truffle.language.RubyNode;
 
-public abstract class ReadGlobalVariableNode extends RubyNode {
+public abstract class ReadGlobalVariableNode extends RubyNode implements UseGlobalDefStack {
 
     private final String name;
 
@@ -50,4 +52,16 @@ public abstract class ReadGlobalVariableNode extends RubyNode {
         }
     }
 
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.USE_GLOBAL_DEF_STACK_TAG)
+            return true;
+        else
+            return super.isTaggedWith(tag);
+    }
 }

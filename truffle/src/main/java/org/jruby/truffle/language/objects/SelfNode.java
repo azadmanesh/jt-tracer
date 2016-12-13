@@ -14,11 +14,15 @@ import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.object.HiddenKey;
+import com.oracle.truffle.api.source.SourceSection;
+
+import org.jruby.truffle.instrumentation.Tracer;
+import org.jruby.truffle.instrumentation.Tracer.UseLocalDefStack;
 import org.jruby.truffle.language.RubyNode;
 import org.jruby.truffle.language.locals.ReadFrameSlotNode;
 import org.jruby.truffle.language.locals.ReadFrameSlotNodeGen;
 
-public class SelfNode extends RubyNode {
+public class SelfNode extends RubyNode implements UseLocalDefStack {
 
     public static final HiddenKey SELF_IDENTIFIER = new HiddenKey("(self)");
 
@@ -26,7 +30,8 @@ public class SelfNode extends RubyNode {
 
     @Child private ReadFrameSlotNode readSelfSlotNode;
 
-    public SelfNode(FrameDescriptor frameDescriptor) {
+    public SelfNode(SourceSection sourceSection, FrameDescriptor frameDescriptor) {
+        super(sourceSection);
         this.selfSlot = frameDescriptor.findOrAddFrameSlot(SelfNode.SELF_IDENTIFIER);
     }
 
@@ -43,6 +48,19 @@ public class SelfNode extends RubyNode {
     @Override
     public Object isDefined(VirtualFrame frame) {
         return coreStrings().SELF.createInstance();
+    }
+
+    @Override
+    public FrameSlot getLocalSlot() {
+        return selfSlot;
+    }
+
+    @Override
+    public boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.USE_LOCAL_DEF_STACK_TAG)
+            return true;
+        else
+            return super.isTaggedWith(tag);
     }
 
 }

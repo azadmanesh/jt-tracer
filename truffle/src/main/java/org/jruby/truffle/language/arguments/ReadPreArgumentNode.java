@@ -9,20 +9,26 @@
  */
 package org.jruby.truffle.language.arguments;
 
+import com.oracle.truffle.api.frame.Frame;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.profiles.BranchProfile;
+import com.oracle.truffle.api.source.SourceSection;
+
+import org.jruby.truffle.instrumentation.Tracer;
+import org.jruby.truffle.instrumentation.Tracer.UseArgDefStack;
 import org.jruby.truffle.language.NotProvided;
 import org.jruby.truffle.language.RubyNode;
 
-public class ReadPreArgumentNode extends RubyNode {
+public class ReadPreArgumentNode extends RubyNode implements UseArgDefStack {
 
     private final int index;
 
     private final BranchProfile outOfRangeProfile = BranchProfile.create();
     private final MissingArgumentBehavior missingArgumentBehavior;
 
-    public ReadPreArgumentNode(int index,
+    public ReadPreArgumentNode(SourceSection sourceSection, int index,
                                MissingArgumentBehavior missingArgumentBehavior) {
+        super(sourceSection);
         this.index = index;
         this.missingArgumentBehavior = missingArgumentBehavior;
     }
@@ -48,6 +54,23 @@ public class ReadPreArgumentNode extends RubyNode {
             default:
                 throw new UnsupportedOperationException("unknown missing argument behaviour");
         }
+    }
+
+    @Override
+    public boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.USE_ARG_DEF_STACK_TAG)
+            return true;
+        else
+            return super.isTaggedWith(tag);
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    @Override
+    public int getArgumentsCount(Frame frame) {
+        return RubyArguments.getArgumentsCount(frame);
     }
 
 }

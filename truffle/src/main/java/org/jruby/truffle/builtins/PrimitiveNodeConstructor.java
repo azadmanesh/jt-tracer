@@ -52,7 +52,7 @@ public class PrimitiveNodeConstructor {
         }
 
         for (int n = 0; n < argumentsCount; n++) {
-            RubyNode readArgumentNode = new ProfileArgumentNode(new ReadPreArgumentNode(n, MissingArgumentBehavior.UNDEFINED));
+            RubyNode readArgumentNode = new ProfileArgumentNode(new ReadPreArgumentNode(sourceSection, n, MissingArgumentBehavior.UNDEFINED));
             arguments.add(transformArgument(readArgumentNode, n + 1));
         }
 

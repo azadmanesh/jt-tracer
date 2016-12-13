@@ -23,12 +23,14 @@ import org.jruby.truffle.core.cast.BooleanCastNodeGen;
 import org.jruby.truffle.core.cast.ProcOrNullNode;
 import org.jruby.truffle.core.cast.ProcOrNullNodeGen;
 import org.jruby.truffle.core.module.ModuleOperations;
+import org.jruby.truffle.instrumentation.Tracer;
+import org.jruby.truffle.instrumentation.Tracer.CallNode;
 import org.jruby.truffle.language.RubyGuards;
 import org.jruby.truffle.language.RubyNode;
 import org.jruby.truffle.language.arguments.RubyArguments;
 import org.jruby.truffle.language.methods.InternalMethod;
 
-public class RubyCallNode extends RubyNode {
+public class RubyCallNode extends RubyNode implements CallNode {
 
     private final String methodName;
 
@@ -245,6 +247,18 @@ public class RubyCallNode extends RubyNode {
 
     public boolean isVCall() {
         return isVCall;
+    }
+
+    @Override
+    protected boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.CALL_NODE_TAG)
+            return true;
+        else
+            return super.isTaggedWith(tag);
+    }
+
+    public int getArgumentsCount() {
+        return arguments.length;
     }
 
 }

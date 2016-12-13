@@ -10,6 +10,8 @@
 package org.jruby.truffle.language.control;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
+
+import org.jruby.truffle.instrumentation.Tracer;
 import org.jruby.truffle.language.RubyNode;
 
 public class ReturnNode extends RubyNode {
@@ -26,6 +28,14 @@ public class ReturnNode extends RubyNode {
     @Override
     public Object execute(VirtualFrame frame) {
         throw new ReturnException(returnID, value.execute(frame));
+    }
+
+    @Override
+    public boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.USE_STACK_DEF_RETURN_TAG)
+            return true;
+        else
+            return false;
     }
 
 }

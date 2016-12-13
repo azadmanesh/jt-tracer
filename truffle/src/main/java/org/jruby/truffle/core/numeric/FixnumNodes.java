@@ -31,6 +31,7 @@ import org.jruby.truffle.core.Hashing;
 import org.jruby.truffle.core.InlinableBuiltin;
 import org.jruby.truffle.core.numeric.FixnumNodesFactory.DivNodeFactory;
 import org.jruby.truffle.core.rope.LazyIntRope;
+import org.jruby.truffle.instrumentation.Tracer;
 import org.jruby.truffle.language.NotProvided;
 import org.jruby.truffle.language.SnippetNode;
 import org.jruby.truffle.language.control.RaiseException;

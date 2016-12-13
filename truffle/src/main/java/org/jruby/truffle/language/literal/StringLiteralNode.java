@@ -43,7 +43,7 @@ public class StringLiteralNode extends RubyNode {
 
     @Override
     protected boolean isTaggedWith(Class<?> tag) {
-        if (tag == Tracer.NO_USE_DEF_STACK)
+        if (tag == Tracer.NO_USE_DEF_STACK_TAG)
             return true;
         else
             return false;

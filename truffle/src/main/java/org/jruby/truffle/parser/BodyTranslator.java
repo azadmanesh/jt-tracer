@@ -700,7 +700,7 @@ public class BodyTranslator extends Translator {
     }
 
     private RubyNode translateCheckFrozen(SourceSection sourceSection) {
-        return new RaiseIfFrozenNode(context, sourceSection, new SelfNode(environment.getFrameDescriptor()));
+        return new RaiseIfFrozenNode(context, sourceSection, new SelfNode(sourceSection, environment.getFrameDescriptor()));
     }
 
     private RubyNode translateCallNode(CallParseNode node, boolean ignoreVisibility, boolean isVCall, boolean isAttrAssign) {
@@ -1905,7 +1905,7 @@ public class BodyTranslator extends Translator {
 
         // Every case will use a SelfParseNode, just don't it use more than once.
         // Also note the check for frozen.
-        final RubyNode self = new RaiseIfFrozenNode(context, fullSourceSection, new SelfNode(environment.getFrameDescriptor()));
+        final RubyNode self = new RaiseIfFrozenNode(context, fullSourceSection, new SelfNode(fullSourceSection, environment.getFrameDescriptor()));
 
         final String path = getSourcePath(sourceSection);
         final String corePath = buildCorePath("");
@@ -1953,7 +1953,7 @@ public class BodyTranslator extends Translator {
         final String name = node.getName();
 
         // About every case will use a SelfParseNode, just don't it use more than once.
-        final SelfNode self = new SelfNode(environment.getFrameDescriptor());
+        final SelfNode self = new SelfNode(sourceSection.toSourceSection(source), environment.getFrameDescriptor());
 
         final String path = getSourcePath(sourceSection);
         final String corePath = buildCorePath("");
@@ -3029,7 +3029,9 @@ public class BodyTranslator extends Translator {
 
     @Override
     public RubyNode visitSelfNode(SelfParseNode node) {
-        final RubyNode ret = new SelfNode(environment.getFrameDescriptor());
+        final RubySourceSection sourceSection = translate(node.getPosition());
+
+        final RubyNode ret = new SelfNode(sourceSection.toSourceSection(source), environment.getFrameDescriptor());
         return addNewlineIfNeeded(node, ret);
     }
 

@@ -16,10 +16,12 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.source.SourceSection;
 import org.jruby.truffle.RubyContext;
 import org.jruby.truffle.core.basicobject.BasicObjectNodes.ReferenceEqualNode;
+import org.jruby.truffle.instrumentation.Tracer;
+import org.jruby.truffle.instrumentation.Tracer.UseStackDefGlobal;
 import org.jruby.truffle.language.RubyNode;
 
 @NodeChild(value = "value")
-public abstract class WriteGlobalVariableNode extends RubyNode {
+public abstract class WriteGlobalVariableNode extends RubyNode implements UseStackDefGlobal {
 
     private final String name;
 
@@ -55,6 +57,19 @@ public abstract class WriteGlobalVariableNode extends RubyNode {
     @Override
     public Object isDefined(VirtualFrame frame) {
         return coreStrings().ASSIGNMENT.createInstance();
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.USE_STACK_DEF_GLOBAL_TAG)
+            return true;
+        else
+            return super.isTaggedWith(tag);
     }
 
 }

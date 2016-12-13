@@ -103,7 +103,8 @@ public class ReloadArgumentsTranslator extends Translator {
 
     @Override
     public RubyNode visitMultipleAsgnNode(MultipleAsgnParseNode node) {
-        return new ProfileArgumentNode(new ReadPreArgumentNode(index, MissingArgumentBehavior.NIL));
+        final RubySourceSection sourceSection = translate(node.getPosition());
+        return new ProfileArgumentNode(new ReadPreArgumentNode(sourceSection.toSourceSection(source), index, MissingArgumentBehavior.NIL));
     }
 
     @Override

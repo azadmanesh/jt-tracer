@@ -300,7 +300,7 @@ public class CoreLibrary {
 
     @TruffleBoundary
     private static Source initCoreSource() {
-        return Source.newBuilder("").name("(core)").mimeType(RubyLanguage.MIME_TYPE).build();
+        return Source.newBuilder("").name("(core)").internal().mimeType(RubyLanguage.MIME_TYPE).build();
     }
 
     private String buildCoreLoadPath() {
@@ -1001,7 +1001,7 @@ public class CoreLibrary {
                 try {
                     for (int n = 0; n < coreFiles.length; n++) {
                         final RubyRootNode rootNode = context.getCodeLoader().parse(
-                                context.getSourceLoader().load(getCoreLoadPath() + coreFiles[n]),
+                                        context.getSourceLoader().load(getCoreLoadPath() + coreFiles[n], true),
                                 UTF8Encoding.INSTANCE, ParserContext.TOP_LEVEL, null, true, node);
 
                         final CodeLoader.DeferredCall deferredCall = context.getCodeLoader().prepareExecute(

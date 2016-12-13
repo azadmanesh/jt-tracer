@@ -11,6 +11,8 @@ package org.jruby.truffle.language.loader;
 
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.source.Source;
+import com.oracle.truffle.api.source.Source.Builder;
+
 import org.jruby.Ruby;
 import org.jruby.truffle.RubyContext;
 import org.jruby.truffle.RubyLanguage;
@@ -51,20 +53,32 @@ public class SourceLoader {
     }
 
     @TruffleBoundary
-    public Source load(String canonicalPath) throws IOException {
+    public Source load(String canonicalPath, boolean internal) throws IOException {
         if (canonicalPath.startsWith(TRUFFLE_SCHEME) || canonicalPath.startsWith(JRUBY_SCHEME)) {
             return loadResource(canonicalPath);
         } else {
             final File file = new File(canonicalPath).getCanonicalFile();
             ensureReadable(canonicalPath, file);
 
+            Builder<IOException, RuntimeException, RuntimeException> builder = null;
             if (canonicalPath.toLowerCase().endsWith(".su")) {
-                return Source.newBuilder(file).name(file.getPath()).mimeType(RubyLanguage.CEXT_MIME_TYPE).build();
+                builder = Source.newBuilder(file).name(file.getPath()).mimeType(RubyLanguage.CEXT_MIME_TYPE);
             } else {
                 // We need to assume all other files are Ruby, so the file type detection isn't enough
-                return Source.newBuilder(file).name(file.getPath()).mimeType(RubyLanguage.MIME_TYPE).build();
+                builder = Source.newBuilder(file).name(file.getPath()).mimeType(RubyLanguage.MIME_TYPE);
             }
+
+            if (internal) {
+                builder.internal();
+            }
+
+            return builder.build();
         }
+    }
+
+    @TruffleBoundary
+    public Source load(String canonicalPath) throws IOException {
+        return load(canonicalPath, false);
     }
 
     @TruffleBoundary

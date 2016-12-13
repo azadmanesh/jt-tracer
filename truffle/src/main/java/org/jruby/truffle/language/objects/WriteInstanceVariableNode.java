@@ -15,10 +15,12 @@ import com.oracle.truffle.api.object.DynamicObject;
 import com.oracle.truffle.api.profiles.ConditionProfile;
 import com.oracle.truffle.api.source.SourceSection;
 import org.jruby.truffle.RubyContext;
+import org.jruby.truffle.instrumentation.Tracer;
+import org.jruby.truffle.instrumentation.Tracer.UseStackDefPropertyStack;
 import org.jruby.truffle.language.RubyNode;
 import org.jruby.truffle.language.control.RaiseException;
 
-public class WriteInstanceVariableNode extends RubyNode {
+public class WriteInstanceVariableNode extends RubyNode implements UseStackDefPropertyStack {
 
     private final String name;
 
@@ -57,6 +59,18 @@ public class WriteInstanceVariableNode extends RubyNode {
     @Override
     public Object isDefined(VirtualFrame frame) {
         return coreStrings().ASSIGNMENT.createInstance();
+    }
+
+    @Override
+    public boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.USE_STACK_DEF_PROPERTY_STACK_TAG)
+            return true;
+        else
+            return super.isTaggedWith(tag);
+    }
+
+    public String getPropertyName() {
+        return name;
     }
 
 }

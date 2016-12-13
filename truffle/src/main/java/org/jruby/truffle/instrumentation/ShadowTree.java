@@ -10,6 +10,11 @@ import com.oracle.truffle.api.nodes.Node;
  */
 public class ShadowTree {
 
+    public final static Node UNKNOWN_NODE = new Node() {
+    };
+
+    public final static Object UNKNOWN_VALUE = new Object();
+
     private final Object value;
 
     private final ShadowTree[] children;
@@ -64,5 +69,19 @@ public class ShadowTree {
 
     public Node getASTNode() {
         return this.astNode;
+    }
+
+    @Override
+    public String toString() {
+        String lineNo = "";
+
+        // source section can be null, e.g.: formal parameter passing
+        if (this.astNode.getSourceSection() != null) {
+            lineNo += this.astNode.getSourceSection().getStartLine();
+        } else {
+            lineNo += "<UNKNOWN>";
+        }
+
+        return "Node:\t" + this.astNode.getClass().getSimpleName() + ", Line:\t" + lineNo + ", Value:\t" + this.value;
     }
 }

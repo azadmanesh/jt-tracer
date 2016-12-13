@@ -234,7 +234,7 @@ public class CoreMethodNodeManager {
         final int nArgs = required + optional;
 
         for (int n = 0; n < nArgs; n++) {
-            RubyNode readArgumentNode = new ProfileArgumentNode(new ReadPreArgumentNode(n, MissingArgumentBehavior.UNDEFINED));
+            RubyNode readArgumentNode = new ProfileArgumentNode(new ReadPreArgumentNode(sourceSection, n, MissingArgumentBehavior.UNDEFINED));
             argumentsNodes.add(transformArgument(context, sourceSection, method, readArgumentNode, n + 1));
         }
         if (method.rest()) {

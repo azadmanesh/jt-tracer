@@ -208,7 +208,7 @@ public class TranslatorDriver {
 
             for (int n = 0; n < argumentNames.length; n++) {
                 final String name = argumentNames[n];
-                final RubyNode readNode = new ProfileArgumentNode(new ReadPreArgumentNode(n, MissingArgumentBehavior.NIL));
+                final RubyNode readNode = new ProfileArgumentNode(new ReadPreArgumentNode(sourceSection, n, MissingArgumentBehavior.NIL));
                 final FrameSlot slot = environment.getFrameDescriptor().findFrameSlot(name);
                 sequence.add(WriteLocalVariableNode.createWriteLocalVariableNode(context, sourceSection, slot, readNode));
             }

@@ -15,11 +15,13 @@ import com.oracle.truffle.api.profiles.BranchProfile;
 import com.oracle.truffle.api.source.SourceSection;
 import org.jruby.truffle.RubyContext;
 import org.jruby.truffle.core.module.ModuleOperations;
+import org.jruby.truffle.instrumentation.Tracer;
+import org.jruby.truffle.instrumentation.Tracer.UseClassVarDefStack;
 import org.jruby.truffle.language.LexicalScope;
 import org.jruby.truffle.language.RubyNode;
 import org.jruby.truffle.language.control.RaiseException;
 
-public class ReadClassVariableNode extends RubyNode {
+public class ReadClassVariableNode extends RubyNode implements UseClassVarDefStack {
 
     private final LexicalScope lexicalScope;
     private final String name;
@@ -60,6 +62,24 @@ public class ReadClassVariableNode extends RubyNode {
         } else {
             return coreStrings().CLASS_VARIABLE.createInstance();
         }
+    }
+
+    @Override
+    protected boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.USE_CLASS_VAR_DEF_STACK_TAG)
+            return true;
+        else
+            return super.isTaggedWith(tag);
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public DynamicObject getLexicalScope() {
+        return lexicalScope.resolveTargetModuleForClassVariables();
     }
 
 }

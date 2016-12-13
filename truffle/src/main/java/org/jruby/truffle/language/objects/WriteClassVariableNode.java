@@ -14,10 +14,12 @@ import com.oracle.truffle.api.object.DynamicObject;
 import com.oracle.truffle.api.source.SourceSection;
 import org.jruby.truffle.RubyContext;
 import org.jruby.truffle.core.module.ModuleOperations;
+import org.jruby.truffle.instrumentation.Tracer;
+import org.jruby.truffle.instrumentation.Tracer.UseStackDefClassVar;
 import org.jruby.truffle.language.LexicalScope;
 import org.jruby.truffle.language.RubyNode;
 
-public class WriteClassVariableNode extends RubyNode {
+public class WriteClassVariableNode extends RubyNode implements UseStackDefClassVar {
 
     private final String name;
     private final LexicalScope lexicalScope;
@@ -48,6 +50,22 @@ public class WriteClassVariableNode extends RubyNode {
     @Override
     public Object isDefined(VirtualFrame frame) {
         return coreStrings().ASSIGNMENT.createInstance();
+    }
+
+    @Override
+    public boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.USE_STACK_DEF_CLASS_VAR_TAG)
+            return true;
+        else
+            return super.isTaggedWith(tag);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public DynamicObject getLexicalScope() {
+        return lexicalScope.resolveTargetModuleForClassVariables();
     }
 
 }

@@ -41,7 +41,18 @@ import java.io.IOException;
                 StandardTags.CallTag.class,
                 Tracer.FunctionBoundary.class,
                 Tracer.NoUseDefStack.class,
-                Tracer.UseStackDefLocalStack.class
+                Tracer.UseStackDefLocalStack.class,
+                Tracer.UseStackDefStack.class,
+                Tracer.UseLocalDefStack.class,
+                Tracer.UseStackDefReturn.class,
+                Tracer.UseArgDefStack.class,
+                Tracer.UseStackDefPropertyStack.class,
+                Tracer.UsePropertyStackDefStack.class,
+                Tracer.CallNode.class,
+                Tracer.UseClassVarDefStack.class,
+                Tracer.UseStackDefClassVar.class,
+                Tracer.UseGlobalDefStack.class,
+                Tracer.UseStackDefGlobal.class
 })
 public class RubyLanguage extends TruffleLanguage<RubyContext> {
 

@@ -15,9 +15,11 @@ import com.oracle.truffle.api.object.DynamicObject;
 import com.oracle.truffle.api.profiles.ConditionProfile;
 import com.oracle.truffle.api.source.SourceSection;
 import org.jruby.truffle.RubyContext;
+import org.jruby.truffle.instrumentation.Tracer;
+import org.jruby.truffle.instrumentation.Tracer.UsePropertyStackDefStack;
 import org.jruby.truffle.language.RubyNode;
 
-public class ReadInstanceVariableNode extends RubyNode {
+public class ReadInstanceVariableNode extends RubyNode implements UsePropertyStackDefStack {
 
     private final String name;
 
@@ -75,6 +77,18 @@ public class ReadInstanceVariableNode extends RubyNode {
         }
 
         return readOrNullNode;
+    }
+
+    public String getPropertyName() {
+        return name;
+    }
+
+    @Override
+    public boolean isTaggedWith(Class<?> tag) {
+        if (tag == Tracer.USE_PROPERTY_STACK_DEF_STACK_TAG)
+            return true;
+        else
+            return super.isTaggedWith(tag);
     }
 
 }

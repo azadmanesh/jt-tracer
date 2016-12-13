@@ -335,7 +335,7 @@ public class LoadArgumentsTranslator extends Translator {
             return PrimitiveArrayNodeFactory.read(context, sourceSection.toSourceSection(source), loadArray(sourceSection), index);
         } else {
             if (state == State.PRE) {
-                return new ProfileArgumentNode(new ReadPreArgumentNode(index, isProc ? MissingArgumentBehavior.NIL : MissingArgumentBehavior.RUNTIME_ERROR));
+                return new ProfileArgumentNode(new ReadPreArgumentNode(sourceSection.toSourceSection(source), index, isProc ? MissingArgumentBehavior.NIL : MissingArgumentBehavior.RUNTIME_ERROR));
             } else if (state == State.POST) {
                 return new ReadPostArgumentNode(-index);
             } else {
