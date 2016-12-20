@@ -15,7 +15,7 @@ import org.jruby.truffle.instrumentation.Tracer;
 import org.jruby.truffle.instrumentation.Tracer.UseArgDefStack;
 import org.jruby.truffle.language.RubyNode;
 
-public class ReadSelfNode extends RubyNode implements UseArgDefStack {
+public class ReadSelfNode extends RubyNode {
 
     @Override
     public Object execute(VirtualFrame frame) {
@@ -35,8 +35,4 @@ public class ReadSelfNode extends RubyNode implements UseArgDefStack {
     }
 
 	
-    public int getArgumentsCount(Frame frame) {
-        return 0;
-    }
-
 }
