@@ -33,4 +33,10 @@ public class ReadSelfNode extends RubyNode implements UseArgDefStack {
     public int getIndex() {
         return 0;
     }
+
+	
+    public int getArgumentsCount(Frame frame) {
+        return 0;
+    }
+
 }
